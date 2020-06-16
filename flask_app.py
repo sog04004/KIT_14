@@ -68,4 +68,5 @@ def getinfo():
         '''
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    if 'liveconsole' not in gethostname():
+        app.run(debug=True)

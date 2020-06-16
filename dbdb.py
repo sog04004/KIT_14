@@ -1,21 +1,13 @@
-import sqlite3
+import pymysql
 
 def dbcon():
-    return sqlite3.connect('mydb.db')
+    return pymysql.connect(host='sog04004.mysql.pythonanywhere-services.com', user='sog04004', password='root1234', db='sog04004$mydb', charset='utf8')
 
 def create_table():
     try:
-        query = '''
-            CREATE TABLE "users" (
-                "id"    varchar(50),
-                "pw"    varchar(50),
-                "name"  varchar(50),
-                PRIMARY KEY("id")
-            )
-        '''
         db = dbcon()
         c = db.cursor()
-        c.execute(query)
+        c.execute("CREATE TABLE users (id varchar(50), pw varchar(50), name varchar(50), PRIMARY KEY(id))")
         db.commit()
     except Exception as e:
         print('db error:', e)
@@ -27,7 +19,7 @@ def insert_user(id, pw, name):
         db = dbcon()
         c = db.cursor()
         setdata = (id, pw, name)
-        c.execute("INSERT INTO users VALUES (?, ?, ?)", setdata)
+        c.execute("INSERT INTO users VALUES (%s, %s, %s)", setdata)
         db.commit()
     except Exception as e:
         print('db error:', e)
@@ -53,7 +45,7 @@ def select_user(id, pw):
         db = dbcon()
         c = db.cursor()
         setdata = (id, pw)
-        c.execute('SELECT * FROM users WHERE id = ? AND pw = ?', setdata)
+        c.execute('SELECT * FROM users WHERE id = %s AND pw = %s', setdata)
         ret = c.fetchone()
     except Exception as e:
         print('db error:', e)
@@ -67,10 +59,12 @@ def check_id(id):
         db = dbcon()
         c = db.cursor()
         setdata = (id,)
-        c.execute('SELECT * FROM users WHERE id = ?', setdata)
+        c.execute('SELECT * FROM users WHERE id = %s', setdata)
         ret = c.fetchone()
     except Exception as e:
         print('db error:', e)
     finally:
         db.close()
     return ret
+
+create_table()
